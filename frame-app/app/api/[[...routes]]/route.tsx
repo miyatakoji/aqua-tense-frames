@@ -99,17 +99,72 @@ app.frame("/", (c) => {
       </div>
     ),
     intents: [
-      // <Button value="create">Create room</Button>,
-      // <Button value="join">Join game with room id</Button>,
-      <Button action="/prepare">Create</Button>,
-      <Button action={`/battle/create`}>Share!</Button>,
-      <Button.Link href="https://google.com">Google</Button.Link>,
-      // status === "response" && <Button.Reset>Reset</Button.Reset>,
+      <Button action="/prepare/create">Create</Button>,
+      <Button action="/prepare/join">Join room</Button>,
+      <Button.Link href="https://google.com">Battle log</Button.Link>,
     ],
   });
 });
 
-app.frame("/prepare", (c) => {
+app.frame("/prepare/:action", (c) => {
+  // const { buttonValue, inputText, status } = c;
+
+  const { buttonValue, status, deriveState, frameData, env, req, verified } = c;
+  console.log({
+    buttonValue,
+    status,
+    deriveState,
+    frameData,
+    env,
+    req,
+    verified,
+  });
+
+  const { action } = req.param();
+  console.log(action);
+
+  return c.res({
+    image:
+      action === "create" ? (
+        <FrameWithText title="Waiting enemy... (roomid:223932)" />
+      ) : (
+        <FrameWithText title="Please enter room number" />
+      ),
+    intents: [
+      <Button action="/battle">Create</Button>,
+      action === "join" && <TextInput placeholder="Enter room id here" />,
+      action === "join" && <Button action="/battle">Join room</Button>,
+      action === "create" && <Button.Reset>Delete room</Button.Reset>,
+      action === "create" && <Button action="/battle">Join room</Button>,
+    ],
+  });
+});
+
+app.frame("/battle/:player", (c) => {
+  const { buttonValue, status, deriveState, frameData, env, req, verified } = c;
+  console.log({
+    buttonValue,
+    status,
+    deriveState,
+    frameData,
+    env,
+    req,
+    verified,
+  });
+
+  const { action } = req.param();
+  console.log(action);
+  return c.res({
+    image: <FrameWithText title="Welcome!" />,
+    intents: [
+      <Button action="/battle:stream-on">Start Stream!!</Button>,
+      <Button action="/battle:stream-off">Stop!!</Button>,
+      <Button action={`/battle/create`}>Share!</Button>,
+    ],
+  });
+});
+
+app.frame("/result", (c) => {
   const { buttonValue, inputText, status } = c;
 
   // const { buttonValue, status, deriveState, frameData, env, req, verified } = c;
@@ -119,7 +174,14 @@ app.frame("/prepare", (c) => {
   // console.log(action);
   return c.res({
     image: <FrameWithText title="Welcome!" />,
-    intents: [<Button value="create">Create room</Button>],
+    intents: [
+      // <Button value="create">Create room</Button>,
+      // <Button value="join">Join game with room id</Button>,
+      <Button action="/prepare">Create</Button>,
+      <Button action={`/battle/create`}>Share!</Button>,
+      <Button.Link href="https://google.com">Google</Button.Link>,
+      // status === "response" && <Button.Reset>Reset</Button.Reset>,
+    ],
   });
 });
 
