@@ -101,7 +101,7 @@ app.frame("/", (c) => {
     intents: [
       <Button action="/prepare/create">Create room</Button>,
       <Button action="/prepare/join">Join room</Button>,
-      <Button.Link href="https://google.com">Battle log</Button.Link>,
+      <Button.Link href="https://google.com">(WIP)Battle log</Button.Link>,
     ],
   });
 });
@@ -126,16 +126,110 @@ app.frame("/prepare/:action", (c) => {
   return c.res({
     image:
       action === "create" ? (
-        <FrameWithText title="Waiting enemy... (roomid:223932) please push check" />
+        <FrameWithText title="Waiting Opponent's... (roomid:223932) please push [check] to check opponent's status" />
       ) : (
         <FrameWithText title="Please enter room number" />
       ),
     intents: [
       action === "join" && <TextInput placeholder="Enter room id here" />,
-      action === "join" && <Button action="/battle/guest">Join room</Button>,
+      action === "join" && <Button action="/battleturnoff">Join room</Button>,
       action === "create" && <Button.Reset>Delete room</Button.Reset>,
-      action === "create" && <Button action="/battle/owner">check</Button>,
+      action === "create" && <Button action="/battleturnon">check</Button>,
     ],
+  });
+});
+
+app.frame("/battleturnon", (c) => {
+  const { buttonValue, status, deriveState, frameData, env, req, verified } = c;
+  console.log({
+    buttonValue,
+    status,
+    deriveState,
+    frameData,
+    env,
+    req,
+    verified,
+  });
+
+  if (buttonValue === "off") {
+    return c.res({
+      action: "/battleturnoff",
+      image: <FrameWithText title="off" />,
+    });
+  }
+
+  // const imagestr =
+  //   buttonValue === "turnon" ? (
+  //     <FrameWithText title="pouring coin" />
+  //   ) : (
+  //     <FrameWithText title="Error!!" />
+  //   );
+
+  // const buttonstr =
+  //   buttonValue === "turnon" ? (
+  //     <Button value="off">Turn off!!</Button>
+  //   ) : (
+  //     <Button value="【Your turn】Turn on stream!!" />
+  //   );
+  return c.res({
+    image: <FrameWithText title="【Your turn】Turn on Stream!!" />,
+    intents: [<Button action="/battlestreaming">Turn on Stream</Button>],
+  });
+});
+
+app.frame("/battlestreaming", (c) => {
+  const { buttonValue, status, deriveState, frameData, env, req, verified } = c;
+  console.log({
+    buttonValue,
+    status,
+    deriveState,
+    frameData,
+    env,
+    req,
+    verified,
+  });
+
+  return c.res({
+    image: <FrameWithText title="pouring coin!!!" />,
+    intents: [<Button action="/readyforwin">Turn off Stream</Button>],
+  });
+});
+
+app.frame("/readyforwin", (c) => {
+  const { buttonValue, status, deriveState, frameData, env, req, verified } = c;
+  console.log({
+    buttonValue,
+    status,
+    deriveState,
+    frameData,
+    env,
+    req,
+    verified,
+  });
+
+  return c.res({
+    image: <FrameWithText title="Opponent's is pouring coin..." />,
+    intents: [<Button action="/result">Check</Button>],
+  });
+});
+
+app.frame("/battleturnoff", (c) => {
+  const { buttonValue, status, deriveState, frameData, env, req, verified } = c;
+  console.log({
+    buttonValue,
+    status,
+    deriveState,
+    frameData,
+    env,
+    req,
+    verified,
+  });
+
+  return c.res({
+    image: (
+      <FrameWithText title="【Opponent's turn】Opponent's is pouring coin..." />
+    ),
+    intents: [<Button action="/battleturnon">check</Button>],
   });
 });
 
@@ -153,20 +247,23 @@ app.frame("/battle/:player", (c) => {
 
   const { player } = req.param();
   console.log(player);
+
   return c.res({
     image:
       player === "guest" ? (
-        <FrameWithText title="Waiting enemy turn" />
+        <FrameWithText title="【Opponent's turn】Opponent's is pouring coin..." />
       ) : (
-        <FrameWithText title="Turn on stream!!" />
+        <FrameWithText title="【Your turn】Turn on stream!!" />
       ),
-    intents: [<Button action="/result">Turn on</Button>],
+    intents: [<Button action="/result">Turn on Stream</Button>],
   });
 });
 
 app.frame("/result", (c) => {
   return c.res({
-    image: <FrameWithText title="You win! you got $100 token" />,
+    image: (
+      <FrameWithText title="【You win!】 Water spilled while the opponent was pouring coins! You got $100 token" />
+    ),
     intents: [
       <Button.Reset>Back to title</Button.Reset>,
       <Button.Link href="https://google.com">Share!</Button.Link>,
