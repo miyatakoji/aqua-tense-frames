@@ -2,5 +2,8 @@
   "dependencies": {
     "frog": "^0.8.6",
     "hono": "^4.2.8"
+  },
+  "devDependencies": {
+    "hardhat": "^2.22.3"
   }
 }
