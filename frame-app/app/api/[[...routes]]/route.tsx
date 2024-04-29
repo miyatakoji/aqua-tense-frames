@@ -99,7 +99,7 @@ app.frame("/", (c) => {
       </div>
     ),
     intents: [
-      <Button action="/prepare/create">Create</Button>,
+      <Button action="/prepare/create">Create room</Button>,
       <Button action="/prepare/join">Join room</Button>,
       <Button.Link href="https://google.com">Battle log</Button.Link>,
     ],
@@ -126,16 +126,15 @@ app.frame("/prepare/:action", (c) => {
   return c.res({
     image:
       action === "create" ? (
-        <FrameWithText title="Waiting enemy... (roomid:223932)" />
+        <FrameWithText title="Waiting enemy... (roomid:223932) please push check" />
       ) : (
         <FrameWithText title="Please enter room number" />
       ),
     intents: [
-      <Button action="/battle">Create</Button>,
       action === "join" && <TextInput placeholder="Enter room id here" />,
-      action === "join" && <Button action="/battle">Join room</Button>,
+      action === "join" && <Button action="/battle/guest">Join room</Button>,
       action === "create" && <Button.Reset>Delete room</Button.Reset>,
-      action === "create" && <Button action="/battle">Join room</Button>,
+      action === "create" && <Button action="/battle/owner">check</Button>,
     ],
   });
 });
@@ -152,35 +151,25 @@ app.frame("/battle/:player", (c) => {
     verified,
   });
 
-  const { action } = req.param();
-  console.log(action);
+  const { player } = req.param();
+  console.log(player);
   return c.res({
-    image: <FrameWithText title="Welcome!" />,
-    intents: [
-      <Button action="/battle:stream-on">Start Stream!!</Button>,
-      <Button action="/battle:stream-off">Stop!!</Button>,
-      <Button action={`/battle/create`}>Share!</Button>,
-    ],
+    image:
+      player === "guest" ? (
+        <FrameWithText title="Waiting enemy turn" />
+      ) : (
+        <FrameWithText title="Turn on stream!!" />
+      ),
+    intents: [<Button action="/result">Turn on</Button>],
   });
 });
 
 app.frame("/result", (c) => {
-  const { buttonValue, inputText, status } = c;
-
-  // const { buttonValue, status, deriveState, frameData, env, req, verified } = c;
-  // console.log({ status, buttonValue, env, frameData });
-
-  // const { action } = req.param();
-  // console.log(action);
   return c.res({
-    image: <FrameWithText title="Welcome!" />,
+    image: <FrameWithText title="You win! you got $100 token" />,
     intents: [
-      // <Button value="create">Create room</Button>,
-      // <Button value="join">Join game with room id</Button>,
-      <Button action="/prepare">Create</Button>,
-      <Button action={`/battle/create`}>Share!</Button>,
-      <Button.Link href="https://google.com">Google</Button.Link>,
-      // status === "response" && <Button.Reset>Reset</Button.Reset>,
+      <Button.Reset>Back to title</Button.Reset>,
+      <Button.Link href="https://google.com">Share!</Button.Link>,
     ],
   });
 });
