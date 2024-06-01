@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-
 import {SuperTokenBase} from "./base/SuperTokenBase.sol";
 
 /// @title Mintable Pure Super Token
